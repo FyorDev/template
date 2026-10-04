@@ -1,2 +1,9 @@
+# Editor
 .vscode/
 .idea/
+
+# Autosave
+*~
+.*-autosave.kra
+*.blend[1-9]
+*.blend@

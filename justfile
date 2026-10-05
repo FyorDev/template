@@ -14,16 +14,20 @@ setup:
     git config core.hooksPath .githooks
     echo "enabled .githooks"
 
-# Format markdown, shell, just files
+# Format markdown, shell, nix, just files
 fmt:
     git ls-files -z '*.md' | xargs -0 -r rumdl fmt --disable MD013,MD028
     git ls-files -z '*.sh' '.githooks/*' | xargs -0 -r shfmt -w
+    git ls-files -z '*.nix' | xargs -0 -r nixfmt
     just --fmt
 
-# Lint markdown, shell files
+# Lint markdown, shell, nix files
 lint:
     git ls-files -z '*.md' | xargs -0 -r rumdl check --disable MD013,MD028
     git ls-files -z '*.sh' '.githooks/*' | xargs -0 -r shellcheck
+    git ls-files -z '*.nix' | xargs -0 -r nixfmt --check
+    git ls-files -z '*.nix' | xargs -0 -r -n1 statix check
+    git ls-files -z '*.nix' | xargs -0 -r deadnix --fail
 
 # Preview changelog since last version
 changelog:

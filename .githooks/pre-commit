@@ -37,3 +37,21 @@ git diff --cached --name-only --diff-filter=ACMR | while read -r file; do
 		exit 1
 	fi
 done || exit 1
+
+# Format and lint GDScript files with gdformat and gdlint
+STAGED_GD=$(git diff --cached --name-only --diff-filter=ACMR -- '*.gd')
+if [ -n "$STAGED_GD" ]; then
+	echo "$STAGED_GD" | xargs gdformat || exit 1
+	echo "$STAGED_GD" | xargs git add || exit 1
+	echo "$STAGED_GD" | xargs gdlint || exit 1
+fi
+
+# Check for GDScript errors with godot
+STAGED_GD=$(git diff --cached --name-only --diff-filter=ACMR -- '*.gd')
+for file in $STAGED_GD; do
+	GODOT_OUT=$(godot --headless --script "$file" --check-only 2>&1)
+	if echo "$GODOT_OUT" | grep -q "ERROR: Failed to load"; then
+		echo "GDScript error in $file"
+		exit 1
+	fi
+done

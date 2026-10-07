@@ -14,6 +14,9 @@ gh fgj
 git-lfs
 rumdl
 shfmt shellcheck
+godot
+inklecate
+gdformat gdlint
 ```
 
 ## Release

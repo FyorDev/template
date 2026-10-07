@@ -6,7 +6,7 @@ setup:
     #!/usr/bin/env bash
     set -euo pipefail
     missing=()
-    for tool in git git-lfs git-cliff rumdl shfmt shellcheck gh fgj; do
+    for tool in git git-lfs git-cliff rumdl shfmt shellcheck gdformat gdlint gh fgj; do
         command -v "$tool" >/dev/null || missing+=("$tool")
     done
     [ ${#missing[@]} -eq 0 ] || { echo "missing tools: ${missing[*]}"; exit 1; }
@@ -14,16 +14,18 @@ setup:
     git config core.hooksPath .githooks
     echo "enabled .githooks"
 
-# Format markdown, shell, just files
+# Format markdown, shell, GDScript, just files
 fmt:
     git ls-files -z '*.md' | xargs -0 -r rumdl fmt --disable MD013,MD028
     git ls-files -z '*.sh' '.githooks/*' | xargs -0 -r shfmt -w
+    git ls-files -z '*.gd' | xargs -0 -r gdformat
     just --fmt
 
-# Lint markdown, shell files
+# Lint markdown, shell, GDScript files
 lint:
     git ls-files -z '*.md' | xargs -0 -r rumdl check --disable MD013,MD028
     git ls-files -z '*.sh' '.githooks/*' | xargs -0 -r shellcheck
+    git ls-files -z '*.gd' | xargs -0 -r gdlint
 
 # Preview changelog since last version
 changelog:
